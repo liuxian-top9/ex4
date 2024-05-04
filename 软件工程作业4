@@ -1,0 +1,83 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+int generateRandomNumber(int maxNum) {
+    return rand() % maxNum + 1;
+}
+
+char generateRandomOperator() {
+    char operators[] = { '+', '-', '*', '/' };
+    int index = rand() % 4;
+    return operators[index];
+}
+
+string generateExpression(int maxNum, bool hasDecimal, bool hasBracket) {
+    string expression = "";
+    int num1 = generateRandomNumber(maxNum);
+    int num2 = generateRandomNumber(maxNum);
+    char op = generateRandomOperator();
+
+    if (hasDecimal) {
+        double decimalNum1 = num1 + (double)rand() / RAND_MAX;
+        double decimalNum2 = num2 + (double)rand() / RAND_MAX;
+        num1 = decimalNum1 * 10;
+        num2 = decimalNum2 * 10;
+    }
+
+    if (hasBracket && rand() % 2 == 0) {
+        expression += "(";
+    }
+
+    expression += to_string(num1) + " " + op + " " + to_string(num2);
+
+    if (hasBracket && rand() % 2 == 0) {
+        expression += ")";
+    }
+
+    return expression;
+}
+
+void generateExercises(int numExercises, int maxNum, bool hasDecimal, bool hasBracket) {
+    ofstream file("exercises.txt");
+    if (!file.is_open()) {
+        cout << "打开文件时发生错误。" << endl;
+        return;
+    }
+
+    for (int i = 0; i < numExercises; i++) {
+        string expression = generateExpression(maxNum, hasDecimal, hasBracket);
+        file << expression << " = " << endl;
+    }
+
+    file.close();
+}
+
+int main() {
+    srand(time(0));
+
+    int numExercises, maxNum;
+    bool hasDecimal, hasBracket;
+
+    cout << "请输入练习题数量：";
+    cin >> numExercises;
+
+    cout << "请输入最大数值：";
+    cin >> maxNum;
+
+    cout << "是否包含小数？（1 代表是，0 代表否）：";
+    cin >> hasDecimal;
+
+    cout << "是否包含括号？（1 代表是，0 代表否）：";
+    cin >> hasBracket;
+
+    generateExercises(numExercises, maxNum, hasDecimal, hasBracket);
+
+    cout << "练习题生成成功，请查看 exercises.txt 文件。" << endl;
+
+    return 0;
+}
